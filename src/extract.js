@@ -6,7 +6,7 @@ const extractArticle = async (link) => {
     try {
         const article = await extract(link)
         article['content'] = sanitize(article['content'], {
-            allowedTags: [ 'b', 'i', 'em', 'strong' ]
+            allowedTags: []
         })
         return article
     } catch (e) {
