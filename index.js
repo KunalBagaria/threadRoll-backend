@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import { port } from './src/envConfig.js'
 import { dailyFetch } from './daily.js'
 import { Article } from './src/models/article.js'
@@ -9,6 +10,8 @@ import mongoose from 'mongoose'
 const app = express()
 const envFile = dotenv.config()
 const mongoURL = process.env.MONGO_URL || envFile.MONGO_URL
+
+app.use(cors())
 
 app.get('/', async (req, res) => {
   res.send(`Hello, what's up? Looks like you've stumbled upon our API. Use it respectfully. Send a GET request to /extract?url=YOUR_URL_HERE to extract your article.`)
