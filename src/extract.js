@@ -1,13 +1,14 @@
 import article from 'article-parser'
-import sanitize from 'sanitize-html'
+import grammarify from 'grammarify'
 const { extract } = article
 
 const extractArticle = async (link) => {
     try {
         const article = await extract(link)
-        article['content'] = sanitize(article['content'], {
-            allowedTags: []
-        })
+        let reg = /(<([^>]+)>)/ig;
+        article['content'] = article['content'].replace(reg, "");
+        article['content'] = article['content'].replace(/\\/g, "");
+        article['content'] = grammarify.clean(article['content']);
         return article
     } catch (e) {
         console.log(e)
