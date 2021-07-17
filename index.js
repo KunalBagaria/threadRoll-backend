@@ -3,6 +3,7 @@ import cors from 'cors'
 import { port } from './src/envConfig.js'
 import { dailyFetch } from './daily.js'
 import { Article } from './src/models/article.js'
+import { Trending } from './src/models/trending.js'
 import extractArticle from './src/extract.js'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
@@ -27,13 +28,17 @@ app.get('/articles', async (req, res) => {
   articles ? res.json(articles) : res.status(404).send('There was an error, please try again later.')
 })
 
+app.get('/trending', async (req, res) => {
+  const articles = await Trending.find({}).limit(50).sort({$natural:-1})
+  articles ? res.json(articles) : res.status(404).send('There was an error, please try again later.')
+})
+
 app.listen(port, () => {
   console.log('Listening on port', port)
   mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then((result) => {
       console.log('Connected to DB')
-      setTimeout(dailyFetch, 1.296e+8)
-
+      dailyFetch()
     })
     .catch((err) => console.error(err))
 })
