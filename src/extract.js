@@ -2,11 +2,13 @@ import article from 'article-parser'
 const { extract } = article
 
 const replacePeriods = (content) => {
-    for (let i = 0; i < content.length; i++) {
-        if (content[i] === '.' && (content[i + 1] !== ' ')) {
-            content.substring(0, i) + ' ' + content.substring(i + 1);
+    let finalContent = content
+    for (let i = 0; i < finalContent.length; i++) {
+        if (finalContent[i] === '.' && (finalContent[i + 1] !== ' ')) {
+            finalContent = finalContent.substring(0, i) + '. ' + finalContent.substring(i + 1);
         }
     }
+    return finalContent
 }
 
 const extractArticle = async (link) => {
