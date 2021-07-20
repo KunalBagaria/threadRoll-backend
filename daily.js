@@ -10,10 +10,10 @@ const arFetch = async (term, schema) => {
     await fetch(`https://newsapi.org/v2/top-headlines?${term}&apiKey=${newsAPIToken}`)
     .then((res) => res.json())
     .then((json) => {
-        articles = json.articles
+        articles = json?.articles
     })
     .catch((err) => console.error(err))
-    if (articles[0]) {
+    if (articles && articles[0]) {
         articles.forEach((article, index) => {
             if (article.content) {
                 setTimeout(() => {
