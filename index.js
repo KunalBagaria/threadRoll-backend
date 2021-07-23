@@ -4,6 +4,7 @@ import { port } from './src/envConfig.js'
 import { dailyFetch } from './daily.js'
 import { Article } from './src/models/article.js'
 import { Trending } from './src/models/trending.js'
+import { User } from './src/models/user.js'
 import extractArticle from './src/extract.js'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
@@ -31,6 +32,45 @@ app.get('/articles', async (req, res) => {
 app.get('/trending', async (req, res) => {
   const articles = await Trending.find({}).limit(50).sort({$natural:-1})
   articles ? res.json(articles) : res.status(404).send('There was an error, please try again later.')
+})
+
+app.get('/save', async (req, res) => {
+  if (req.query.user && req.query._id) {
+    console.log(req.query.user, req.query._id)
+    User.findOne({ userId: req.query.user }).then((results) => {
+      if (results._id) {
+        User.updateOne({ userId: req.query.user }, { $push: { articles: req.query._id } }).then((results) => console.log(results))
+      } else {
+        const newUser = new User({
+          userId: req.query.user,
+          articles: [req.query._id]
+        })
+        newUser.save()
+      }
+      res.status(200).send('Article saved.')
+    }).catch((err) => {
+      res.status(500).send('There was an error, please try again later.')
+    })
+  } else {
+    res.status(500).send('There was an error, please try again later.')
+  }
+})
+
+app.get('/getarticle', async (req, res) => {
+  if (req.query.user) {
+    User.findOne({ userId: req.query.user })
+      .then((user) => {
+        Article.find({
+          '_id': { $in: user.articles }
+      }, (err, docs) => {
+          docs ? res.json(docs).status(200) : res.status(404).send('There was an error, please try again later.')
+      })
+    }).catch((err) => {
+      res.status(500).send('There was an error, please try again later.')
+    })
+  } else {
+    res.status(500).send('There was an error, please try again later.')
+  }
 })
 
 app.listen(port, () => {
