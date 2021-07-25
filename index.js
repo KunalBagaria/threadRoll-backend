@@ -73,6 +73,23 @@ app.get('/getarticle', async (req, res) => {
   }
 })
 
+app.get('/savedtrending', async (req, res) => {
+  if (req.query.user) {
+    User.findOne({ userId: req.query.user })
+      .then((user) => {
+        Trending.find({
+          '_id': { $in: user.articles }
+      }, (err, docs) => {
+          docs ? res.json(docs).status(200) : res.status(404).send('There was an error, please try again later.')
+      })
+    }).catch((err) => {
+      res.status(500).send('There was an error, please try again later.')
+    })
+  } else {
+    res.status(500).send('There was an error, please try again later.')
+  }
+})
+
 app.listen(port, () => {
   console.log('Listening on port', port)
   mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
