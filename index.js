@@ -38,7 +38,7 @@ app.get('/save', async (req, res) => {
   if (req.query.user && req.query._id) {
     console.log(req.query.user, req.query._id)
     User.findOne({ userId: req.query.user }).then((results) => {
-      if (results._id) {
+      if (results) {
         User.updateOne({ userId: req.query.user }, { $push: { articles: req.query._id } }).then((results) => console.log(results))
       } else {
         const newUser = new User({
