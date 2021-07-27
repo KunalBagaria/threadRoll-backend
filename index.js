@@ -102,7 +102,7 @@ app.listen(port, () => {
   mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then((result) => {
       console.log('Connected to DB')
-      // dailyFetch()
+      dailyFetch()
     })
     .catch((err) => console.error(err))
 })

@@ -1,11 +1,12 @@
 import article from 'article-parser'
 const { extract } = article
 
-const replacePeriods = (content) => {
+const replaceStuff = (content) => {
     let finalContent = content
+    const toReplaceStuff = ['.', '?', '|', ';']
     for (let i = 0; i < finalContent.length; i++) {
-        if (finalContent[i] === '.' && (finalContent[i + 1] !== ' ')) {
-            finalContent = finalContent.substring(0, i) + '. ' + finalContent.substring(i + 1);
+        if (toReplaceStuff.includes(finalContent[i]) && (finalContent[i + 1] !== ' ')) {
+            finalContent = finalContent.substring(0, i + 1) + ' ' + finalContent.substring(i + 1);
         }
     }
     return finalContent
@@ -14,10 +15,9 @@ const replacePeriods = (content) => {
 const extractArticle = async (link) => {
     try {
         const article = await extract(link)
-        let reg = /(<([^>]+)>)/ig;
-        article['content'] = article['content'].replace(reg, "");
-        article['content'] = article['content'].replace(/\\/g, "");
-        article['content'] = replacePeriods(article['content']);
+        article['content'] = article['content'].replace(/(<([^>]+)>)/ig, '');
+        article['content'] = article['content'].replace(/\\/g, '');
+        article['content'] = replaceStuff(article['content']);
         return article
     } catch (e) {
         console.log(e)
