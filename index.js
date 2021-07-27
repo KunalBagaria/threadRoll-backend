@@ -1,19 +1,26 @@
 import express from 'express'
 import cors from 'cors'
+import rateLimit from 'express-rate-limit'
+import extractArticle from './src/extract.js'
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
 import { port } from './src/envConfig.js'
 import { dailyFetch } from './daily.js'
 import { Article } from './src/models/article.js'
 import { Trending } from './src/models/trending.js'
 import { User } from './src/models/user.js'
-import extractArticle from './src/extract.js'
-import dotenv from 'dotenv'
-import mongoose from 'mongoose'
 
 const app = express()
 const envFile = dotenv.config()
 const mongoURL = process.env.MONGO_URL || envFile.MONGO_URL
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50 // limit each IP to 100 requests per windowMs
+})
+
 app.use(cors())
+app.use(limiter)
 
 app.get('/', async (req, res) => {
   res.send(`Hello, what's up? Looks like you've stumbled upon our API. Use it respectfully. Send a GET request to /extract?url=YOUR_URL_HERE to extract your article.`)
@@ -60,11 +67,11 @@ app.get('/getarticle', async (req, res) => {
   if (req.query.user) {
     User.findOne({ userId: req.query.user })
       .then((user) => {
-        Article.find({
-          '_id': { $in: user.articles }
-      }, (err, docs) => {
-          docs ? res.json(docs).status(200) : res.status(404).send('There was an error, please try again later.')
-      })
+        Article.find({ '_id': { $in: user.articles } }).sort({$natural:-1})
+          .then((results) => {
+            results ? res.json(results).status(200) : res.status(404).send('There was an error, please try again later.')
+          })
+          .catch((err) => console.error(err))
     }).catch((err) => {
       res.status(500).send('There was an error, please try again later.')
     })
@@ -77,11 +84,11 @@ app.get('/savedtrending', async (req, res) => {
   if (req.query.user) {
     User.findOne({ userId: req.query.user })
       .then((user) => {
-        Trending.find({
-          '_id': { $in: user.articles }
-      }, (err, docs) => {
-          docs ? res.json(docs).status(200) : res.status(404).send('There was an error, please try again later.')
-      })
+        Trending.find({ '_id': { $in: user.articles } }).sort({$natural:-1})
+          .then((results) => {
+            results ? res.json(results).status(200) : res.status(404).send('There was an error, please try again later.')
+          })
+          .catch((err) => console.error(err))
     }).catch((err) => {
       res.status(500).send('There was an error, please try again later.')
     })
@@ -95,7 +102,7 @@ app.listen(port, () => {
   mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then((result) => {
       console.log('Connected to DB')
-      dailyFetch()
+      // dailyFetch()
     })
     .catch((err) => console.error(err))
 })
