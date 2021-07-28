@@ -3,7 +3,7 @@ const { extract } = article
 
 const replaceStuff = (content) => {
     let finalContent = content
-    const toReplaceStuff = ['.', '?', '|', ';']
+    const toReplaceStuff = ['.', '?', '|', ';', ':']
     for (let i = 0; i < finalContent.length; i++) {
         if (toReplaceStuff.includes(finalContent[i]) && (finalContent[i + 1] !== ' ')) {
             finalContent = finalContent.substring(0, i + 1) + ' ' + finalContent.substring(i + 1);
