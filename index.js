@@ -103,6 +103,7 @@ app.listen(port, () => {
     .then((result) => {
       console.log('Connected to DB')
       dailyFetch()
+      setInterval(dailyFetch, 1.296e+8)
     })
     .catch((err) => console.error(err))
 })

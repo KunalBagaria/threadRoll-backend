@@ -42,7 +42,6 @@ const arFetch = async (term, schema) => {
             }
         })
     }
-    setTimeout(dailyFetch, 1.296e+8)
 }
 
 const dailyFetch = () => {
