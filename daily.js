@@ -2,7 +2,6 @@ import dotenv from 'dotenv'
 import { Article } from './src/models/article.js'
 import { Trending } from './src/models/trending.js'
 import fetch from 'node-fetch'
-import { ReactionUserManager } from 'discord.js'
 
 const arFetch = async (term, schema) => {
     console.log('This was called')
